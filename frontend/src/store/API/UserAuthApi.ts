@@ -1,28 +1,80 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  createUserWithEmailAndPassword,
+  UserCredential,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth, googleProvider } from "../../config/firebase-config";
+
+interface IUserSignInData {
+  email: string;
+  password: string;
+}
 
 export const UserAuthAPI = createApi({
   reducerPath: "UserAuthAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_APP_LOCAL_API_BASE_URL
-      }/api/users/authenticate`,
-  }),
+  baseQuery: fakeBaseQuery(),
   tagTypes: ["User", "UpdateUser"],
   endpoints: (builder) => ({
-    createUser: builder.mutation({
-      query: (signupParams) => ({
-        url: "/register",
-        method: "POST",
-        body: signupParams,
-      }),
-      invalidatesTags: ["User"],
+    emailSignup: builder.mutation({
+      queryFn: async (user: IUserSignInData) => {
+        try {
+          const { email, password } = user;
+          const response: UserCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+          return {
+            data: response,
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
     }),
-    loginUser: builder.mutation({
-      query: (loginParams) => ({
-        url: "/login",
-        method: "POST",
-        body: loginParams,
-      }),
-      invalidatesTags: ["User"],
+
+    emailLogin: builder.mutation({
+      queryFn: async (user: IUserSignInData) => {
+        try {
+          const { email, password } = user;
+          const response: UserCredential = await signInWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+
+          return {
+            data: response,
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
+    }),
+
+    googleSignup: builder.mutation({
+      queryFn: async () => {
+        try {
+          const response: UserCredential = await signInWithPopup(
+            auth,
+            googleProvider
+          );
+          return {
+            data: response,
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
     }),
 
     updateUser: builder.mutation({
@@ -41,8 +93,9 @@ export const UserAuthAPI = createApi({
 });
 
 export const {
-  useCreateUserMutation,
-  useLoginUserMutation,
+  useEmailSignupMutation,
+  useEmailLoginMutation,
+  useGoogleSignupMutation,
   useUpdateUserMutation,
   useGetUserQuery,
 } = UserAuthAPI;

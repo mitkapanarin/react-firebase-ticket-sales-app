@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./config/firebase-config";
+import Cookies from "js-cookie";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import {
   Home,
@@ -14,17 +18,29 @@ import {
   DisplaySearchResult,
   ShoppingCart,
   Checkout,
+  EditEventForm,
 } from "./Pages";
 import Sidebar from "./components/Sidebar/Sidebar";
 import ProtectedRoutes from "./Pages/utils/ProtectetRoutes";
-// import EditEventModal from "./components/EditModal/EditEventModal";
-import EditEventForm from "./Pages/EditEventForm";
-import { useSelector } from "react-redux";
-import { RootState } from "./store";
+import { loginSuccess, logoutSuccess } from "./store/Slices/userSlice";
+import { useDispatch } from "react-redux";
 
 const App = () => {
-  const userRole: string = useSelector((x: RootState) => x.user.userRole);
-  console.log("user role", userRole);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const uid = user.uid;
+        // @ts-ignore
+        Cookies.set("accessToken", user?.accessToken);
+        dispatch(loginSuccess({ userUid: uid }));
+      } else {
+        0;
+        Cookies.remove("accessToken");
+        dispatch(logoutSuccess());
+      }
+    });
+  });
 
   return (
     <BrowserRouter>
@@ -33,7 +49,7 @@ const App = () => {
           <Route path="/" element={<div>Welcome</div>} />
           <Route
             path="/dashboard"
-            element={userRole === "admin" ? <Home /> : <Navigate to="/" />}
+            // element={userRole === "admin" ? <Home /> : <Navigate to="/" />}
           />
           <Route path="/events" element={<Events />} />
           <Route path="/musical-concerts" element={<MusicalConcerts />} />

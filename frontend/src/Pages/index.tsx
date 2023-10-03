@@ -13,8 +13,10 @@ import StandUpComedies from "./StandUpComedies";
 import DisplaySearchResult from "./DisplaySearchResult";
 import ShoppingCart from "./ShoppingCart";
 import Checkout from "./Checkout";
+import EditEventForm from "./EditEventForm";
 
 export {
+  EditEventForm,
   Checkout,
   ShoppingCart,
   DisplaySearchResult,
