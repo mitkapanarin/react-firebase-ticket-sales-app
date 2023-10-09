@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./config/firebase-config";
-import Cookies from "js-cookie";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import {
   Home,
   ErrorPage,
@@ -17,11 +16,14 @@ import {
   StandUpComedies,
   DisplaySearchResult,
   ShoppingCart,
+  ForgotPassword,
+  ResetPassword,
   Checkout,
   EditEventForm,
-} from "./Pages";
+} from "./pages";
 import Sidebar from "./components/Sidebar/Sidebar";
-import ProtectedRoutes from "./Pages/utils/ProtectetRoutes";
+import ProtectedRoutes from "./pages/utils/ProtectetRoutes";
+import Cookies from "js-cookie";
 import { loginSuccess, logoutSuccess } from "./store/Slices/userSlice";
 import { useDispatch } from "react-redux";
 
@@ -35,22 +37,17 @@ const App = () => {
         Cookies.set("accessToken", user?.accessToken);
         dispatch(loginSuccess({ userUid: uid }));
       } else {
-        0;
         Cookies.remove("accessToken");
         dispatch(logoutSuccess());
       }
     });
-  });
+  }, []);
 
   return (
     <BrowserRouter>
       <Sidebar>
         <Routes>
-          <Route path="/" element={<div>Welcome</div>} />
-          <Route
-            path="/dashboard"
-            // element={userRole === "admin" ? <Home /> : <Navigate to="/" />}
-          />
+          <Route path="/" element={<Home />} />
           <Route path="/events" element={<Events />} />
           <Route path="/musical-concerts" element={<MusicalConcerts />} />
           <Route path="/stand-up-comedies" element={<StandUpComedies />} />
@@ -69,6 +66,8 @@ const App = () => {
           </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="*" element={<ErrorPage />} />
         </Routes>
       </Sidebar>

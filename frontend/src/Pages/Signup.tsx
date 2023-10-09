@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import {
   useEmailSignupMutation,
   useGoogleSignupMutation,
-} from "../store/API/UserAuthApi";
+} from "../store/API/UserAuthAPI";
 import { useNavigate } from "react-router-dom";
 
 interface IUserData {
@@ -45,9 +45,9 @@ const Signup = () => {
   const googleAuthenticate = async () => {
     await toast
       .promise(googleSignup(null).unwrap(), {
-        pending: "Createing user...",
-        success: "User created successfully",
-        error: "Error creating user",
+        pending: "Signing in...",
+        success: "Signed in successfully",
+        error: "Error signing in",
       })
       .then(() => navigate("/profile"))
       .catch((err) => toast.error(err));
@@ -60,7 +60,9 @@ const Signup = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign Up for a new account
             </h1>
-            <button onClick={googleAuthenticate}>Google Signup</button>
+            <button className="border p-2" onClick={googleAuthenticate}>
+              google signup
+            </button>
             <form className="space-y-4 md:space-y-6" onSubmit={onSubmit}>
               <InputField
                 label="Your Email"

@@ -14,9 +14,9 @@ import DisplaySearchResult from "./DisplaySearchResult";
 import ShoppingCart from "./ShoppingCart";
 import Checkout from "./Checkout";
 import EditEventForm from "./EditEventForm";
+import ResetPassword from "./ResetPassword";
 
 export {
-  EditEventForm,
   Checkout,
   ShoppingCart,
   DisplaySearchResult,
@@ -32,4 +32,6 @@ export {
   ForgotPassword,
   Profile,
   EventDetailsPage,
+  EditEventForm,
+  ResetPassword,
 };

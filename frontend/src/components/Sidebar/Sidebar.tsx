@@ -14,7 +14,7 @@ import {
   XMarkIcon,
   ShoppingCartIcon,
 } from "@heroicons/react/24/solid";
-import NavLink from "./Navlink";
+import NavLink from "./NavLink";
 import BasicSwitch from "../Switch/BasicSwitch";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../store";
@@ -43,7 +43,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
 
   const logoutFn = async () => {
     await signOut(auth)
-      .then(() => toast.success("Logout success"))
+      .then(() => toast.success("Logout Success!"))
       .catch((err) => toast.error(err.message));
   };
 
@@ -125,9 +125,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                 to="/login"
                 label="Signout"
                 icon={<ArrowRightOnRectangleIcon className={iconStyles} />}
-                onClick={() => {
-                  logoutFn();
-                }}
+                onClick={() => logoutFn()}
               />
             )}
 
@@ -155,7 +153,6 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
                 {isDarkMode ? "Dark Mode" : "Light Mode"}
               </span>
               <BasicSwitch
-                checked={isDarkMode ? true : false}
                 onchange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   e.target.checked
                     ? dispatch(themeSwitch(ThemeTypesEnum.DARK))

@@ -1,40 +1,38 @@
 import { FC, useState } from "react";
 import dayjs from "dayjs";
-import { BookmarkIcon, PencilIcon } from "@heroicons/react/24/outline";
+import {
+  BookmarkIcon,
+  // PencilIcon
+} from "@heroicons/react/24/outline";
 import { BookmarkIcon as BookmarkIconSolid } from "@heroicons/react/24/solid";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import DeleteIcon from "../DeleteModal/DeleteIcon";
+// import { useNavigate } from "react-router-dom";
+// import DeleteIcon from "../DeleteModal/DeleteIcon";
+// import { useSelector } from "react-redux";
+// import { RootState } from "../../store";
+import { IEventData } from "../../types/interface";
 
-interface IEventCardProps {
-  date: Date;
-  description: string;
-  image: string;
-  location: string;
-  title: string;
-  price: number;
-  type: string;
-  _id?: string;
-  id?: string;
+interface IEventCardProps extends IEventData {
   saved?: boolean;
-  userRole?: string;
   saveAnEventToBookMark: ({ eventID }: { eventID: string }) => void;
   removeAnEventFromBookmark?: ({ eventID }: { eventID: string }) => void;
 }
 
 const EventCard: FC<IEventCardProps> = ({
+  image,
   date,
   description,
-  image,
   location,
+  // price,
+  // type,
   title,
-  _id,
   saved,
-  userRole,
+  id,
   saveAnEventToBookMark,
   removeAnEventFromBookmark,
 }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
+  // const userRole: string = useSelector((x: RootState) => x.user);
 
   const [isSaved, setIsSaved] = useState(saved || false);
 
@@ -44,9 +42,9 @@ const EventCard: FC<IEventCardProps> = ({
     e.preventDefault();
     if (isSaved) {
       removeAnEventFromBookmark &&
-        removeAnEventFromBookmark({ eventID: _id as string });
+        removeAnEventFromBookmark({ eventID: id as string });
     } else {
-      saveAnEventToBookMark({ eventID: _id as string });
+      saveAnEventToBookMark({ eventID: id as string });
     }
     setIsSaved(!isSaved);
   };
@@ -57,7 +55,7 @@ const EventCard: FC<IEventCardProps> = ({
   return (
     <div className="mb-10">
       <Link
-        to={`/events/${_id}`}
+        to={`/events/${id}`}
         className="bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
       >
         <img
@@ -98,10 +96,10 @@ const EventCard: FC<IEventCardProps> = ({
             />
           )}
         </div>
-        {userRole === "admin" && (
+        {/* {userRole === "admin" && (
           <>
             <button
-              onClick={() => navigate(`/update-event/${_id}`)}
+              onClick={() => navigate(`/update-event/${id}`)}
               className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
               type="button"
             >
@@ -111,10 +109,10 @@ const EventCard: FC<IEventCardProps> = ({
               type="button"
               className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
             >
-              <DeleteIcon id={_id} />
+              <DeleteIcon id={id} />
             </button>
           </>
-        )}
+        )} */}
       </div>
     </div>
   );

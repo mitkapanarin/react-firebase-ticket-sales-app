@@ -18,7 +18,7 @@ const Checkout = () => {
   const basket = useSelector((state: RootState) => state?.Basket?.basketItems);
   console.log("basket", basket);
 
-  const modifyBasket = basket.map((item: { id: string; quantity: number }) => {
+  const modifyBasket = basket.map((item) => {
     return {
       eventID: item.id,
       quantity: item.quantity,
@@ -63,11 +63,11 @@ const Checkout = () => {
 
   return (
     <div>
-      <h2>Checkout</h2>
+      <h2 >Checkout</h2>
       <div>
         <ItemCard {...data} />
         <div className="">
-          <div>
+          <div >
             <InputField
               type="text"
               name="name"

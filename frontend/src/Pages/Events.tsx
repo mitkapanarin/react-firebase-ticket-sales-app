@@ -9,11 +9,8 @@ import {
   useSaveToBookMarkMutation,
   useRemoveEventFromBookMarkMutation,
 } from "../store/API/BookMarkAPI";
-import { RootState } from "../store";
-import { useSelector } from "react-redux";
 
 const Events = () => {
-  const userRole: string = useSelector((x: RootState) => x.user.userRole);
   const { data: bookmarksData, isLoading: isBookMarksLoading } =
     useGetAllBookMarksQuery(null);
   console.log(bookmarksData?.findUserBookMarks?.bookmarks);
@@ -92,13 +89,12 @@ const Events = () => {
           {sortedConcerts?.map((item: IEventData) => {
             return (
               <EventCard
-                key={item?._id}
-                userRole={userRole}
+                key={item?.id}
                 {...item}
                 saveAnEventToBookMark={saveAnEventToBookMark}
                 removeAnEventFromBookmark={removeAnEventFromBookmark}
                 saved={bookmarksData?.findUserBookMarks?.bookmarks?.includes(
-                  item?._id
+                  item?.id
                 )}
               />
             );
@@ -116,12 +112,12 @@ const Events = () => {
           {sortedComedies?.map((item: IEventData) => {
             return (
               <EventCard
-                key={item?._id}
+                key={item?.id}
                 {...item}
                 saveAnEventToBookMark={saveAnEventToBookMark}
                 removeAnEventFromBookmark={removeAnEventFromBookmark}
                 saved={bookmarksData?.findUserBookMarks?.bookmarks?.includes(
-                  item?._id
+                  item?.id
                 )}
               />
             );

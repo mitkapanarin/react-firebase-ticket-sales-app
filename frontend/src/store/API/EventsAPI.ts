@@ -1,35 +1,66 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { IEventData } from "../../types/interface";
-import Cookies from "js-cookie";
+import { addDoc, collection, doc, getDocs, getDoc } from "firebase/firestore";
+import { db } from "../../config/firebase-config";
+
+const collectionName = "events";
 
 export const EventsAPI = createApi({
   reducerPath: "EventsAPI",
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${import.meta.env.VITE_APP_LOCAL_API_BASE_URL}/api/events`,
-    prepareHeaders: (headers) => {
-      const token = Cookies.get("token");
-      if (token) {
-        headers.set("authorization", `${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: fakeBaseQuery(),
   tagTypes: ["Events"],
   endpoints: (builder) => ({
     getAllEvents: builder.query<IEventData[], null>({
-      query: () => "/events",
-      providesTags: ["Events"],
+      queryFn: async () => {
+        try {
+          const refID = await getDocs(collection(db, collectionName));
+          const eventsData = refID.docs.map((doc) => {
+            const documentID = doc.id;
+            const data = doc.data();
+            return {
+              id: documentID,
+              ...data,
+            };
+          });
+          return {
+            data: eventsData as IEventData[],
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
     }),
     getOneEvent: builder.query<IEventData, string>({
-      query: (id) => `/get-one-event/${id}`,
+      queryFn: async (id) => {
+        const refID = doc(db, collectionName, id);
+        const eventsSnapshot = await getDoc(refID);
+        try {
+          return {
+            data: eventsSnapshot?.data() as IEventData,
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
       providesTags: ["Events"],
     }),
     CreateEvent: builder.mutation({
-      query: (body) => ({
-        url: "/create-event",
-        method: "POST",
-        body,
-      }),
+      queryFn: async (body) => {
+        try {
+          await addDoc(collection(db, collectionName), body);
+          return {
+            data: "Event created successfully",
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
       invalidatesTags: ["Events"],
     }),
     updateEvent: builder.mutation({
@@ -42,7 +73,7 @@ export const EventsAPI = createApi({
     }),
     getMultipleEvents: builder.mutation({
       query: (body) => ({
-        url: "/get-multiple-events",
+        url: "/multiple-events",
         method: "POST",
         body: body,
       }),

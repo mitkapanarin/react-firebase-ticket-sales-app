@@ -1,9 +1,11 @@
 import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import {
   createUserWithEmailAndPassword,
-  UserCredential,
   signInWithEmailAndPassword,
+  UserCredential,
   signInWithPopup,
+  sendPasswordResetEmail,
+  confirmPasswordReset,
 } from "firebase/auth";
 import { auth, googleProvider } from "../../config/firebase-config";
 
@@ -37,7 +39,6 @@ export const UserAuthAPI = createApi({
         }
       },
     }),
-
     emailLogin: builder.mutation({
       queryFn: async (user: IUserSignInData) => {
         try {
@@ -47,7 +48,6 @@ export const UserAuthAPI = createApi({
             email,
             password
           );
-
           return {
             data: response,
           };
@@ -57,8 +57,8 @@ export const UserAuthAPI = createApi({
           };
         }
       },
+      invalidatesTags: ["User"],
     }),
-
     googleSignup: builder.mutation({
       queryFn: async () => {
         try {
@@ -75,8 +75,44 @@ export const UserAuthAPI = createApi({
           };
         }
       },
+      invalidatesTags: ["User"],
     }),
 
+    sendResetPassWordEmail: builder.mutation({
+      queryFn: async ({ email }) => {
+        try {
+          await sendPasswordResetEmail(auth, email, {
+            url: "http://localhost:5173/login",
+          });
+          return {
+            data: "Password reset link sent to your email",
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
+      invalidatesTags: ["User"],
+    }),
+
+    setNewPassWord: builder.mutation({
+      queryFn: async ({ oobCode, password }) => {
+        await confirmPasswordReset(auth, oobCode, password);
+        try {
+          return {
+            data: "Successfully reset Password",
+          };
+        } catch (err) {
+          return {
+            error: (err as Error)?.message,
+          };
+        }
+      },
+      invalidatesTags: ["User"],
+    }),
+
+    // delete them later
     updateUser: builder.mutation({
       query: ({ id, body }) => ({
         url: `/update/${id}`,
@@ -96,6 +132,6 @@ export const {
   useEmailSignupMutation,
   useEmailLoginMutation,
   useGoogleSignupMutation,
-  useUpdateUserMutation,
-  useGetUserQuery,
+  useSendResetPassWordEmailMutation,
+  useSetNewPassWordMutation,
 } = UserAuthAPI;

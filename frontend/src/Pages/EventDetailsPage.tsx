@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useGetOneEventQuery } from "../store/API/EventsAPI";
 import { gradientTextStyles } from "../components/Text/TextStyles";
@@ -18,13 +18,15 @@ import { BookmarkIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-toastify";
 import { addToCart } from "../store/Slices/basket";
 import { useDispatch, useSelector } from "react-redux";
+import { IEventData } from "../types/interface";
 import { RootState } from "../store";
 
 const EventDetailsPage = () => {
+  const saved = false;
   const params = useParams<{ id: string }>();
   const eventId = params.id;
   const dispatch = useDispatch();
-  const token = useSelector((state: RootState) => state?.user?.token);
+  const token = useSelector((state: RootState) => state.user.userUid);
   console.log("eventID", eventId);
 
   const [quantity, setQuantity] = useState(0);
@@ -38,9 +40,10 @@ const EventDetailsPage = () => {
   const [saveToBookMark] = useSaveToBookMarkMutation();
   const [removeEventFromBookMark] = useRemoveEventFromBookMarkMutation();
 
-  const [isSaved, setIsSaved] = useState(
-    bookmarksData?.findUserBookMarks?.bookmarks?.includes(eventId)
-  );
+  useEffect(() => {
+    // Set the initial saved state when the component mounts
+    setIsSaved(saved);
+  }, [saved]);
 
   const saveAnEventToBookMark = async ({ eventID }: { eventID: string }) => {
     await toast.promise(saveToBookMark({ eventID }).unwrap(), {
@@ -62,15 +65,15 @@ const EventDetailsPage = () => {
     });
   };
 
-  const handleBookmarkClick = (
-    e: React.MouseEvent<SVGSVGElement, MouseEvent>
-  ) => {
-    e.preventDefault();
+  const [isSaved, setIsSaved] = useState(saved); // Initialize directly with the saved prop
+
+  const handleBookmarkClick = () => {
     if (isSaved) {
-      removeAnEventFromBookmark &&
-        removeAnEventFromBookmark({ eventID: eventId as string });
+      removeAnEventFromBookmark({
+        eventID: (data as IEventData).id as string,
+      });
     } else {
-      saveAnEventToBookMark({ eventID: eventId as string });
+      saveAnEventToBookMark({ eventID: (data as IEventData).id as string });
     }
     setIsSaved(!isSaved);
   };
@@ -203,6 +206,30 @@ const EventDetailsPage = () => {
           Add to cart
         </button>
       </form>
+
+      {/* <div className="flex flex-col items-center justify-center">
+        <div className="flex gap-5">
+          <button className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+            <PlusIcon
+              className="h-6"
+              onClick={() => setQuantity(quantity + 1)}
+            />
+          </button>
+          <button>{quantity}</button>
+          <button className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900">
+            <MinusIcon
+              onClick={() => setQuantity(quantity - 1)}
+              className="h-6"
+            />
+          </button>
+        </div>
+        <button
+          type="button"
+          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+        >
+          Add to cart
+        </button>
+      </div> */}
     </div>
   );
 };

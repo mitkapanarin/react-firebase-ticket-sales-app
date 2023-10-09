@@ -4,10 +4,7 @@ export interface IEventData {
   image: string;
   location: string;
   title: string;
-  _id: string;
-}
-
-export interface IUserSignInData {
-  email: string;
-  password: string;
+  price: number;
+  type: string;
+  id?: string;
 }
